@@ -14,14 +14,14 @@ import (
 func AsJSON(x interface{}) string {
 	b, err := json.Marshal(x)
 	if err != nil {
-		return fmt.Sprintf("JSON parse error: %s", error.Error)
+		return fmt.Sprintf("JSON parse error: %s", err)
 	}
 
 	var prettyJSON bytes.Buffer
 	error := json.Indent(&prettyJSON, b, "", "\t")
 	if error != nil {
 
-		return fmt.Sprintf("JSON parse error: %s", error.Error)
+		return fmt.Sprintf("JSON parse error: %s", err)
 	}
 	return prettyJSON.String()
 }
