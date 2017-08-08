@@ -2,6 +2,7 @@ package source
 
 import (
 	"regexp"
+	"sort"
 	"strconv"
 )
 
@@ -52,4 +53,25 @@ func ParseSourceErrors(message string) []Error {
 		errors = append(errors, e)
 	}
 	return errors
+}
+
+func GetRangesFromErrors(errors []Error, tolerance int) []int {
+	nums := make(map[int]bool)
+	for _, err := range errors {
+		start := 1
+		if err.Line-tolerance > start {
+			start = err.Line - tolerance
+		}
+		end := err.Line + tolerance + 1
+		for i := start; i < end; i++ {
+			nums[i] = true
+		}
+	}
+
+	var lines []int
+	for line := range nums {
+		lines = append(lines, line)
+	}
+	sort.Ints(lines)
+	return lines
 }
