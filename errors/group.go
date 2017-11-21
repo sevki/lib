@@ -22,6 +22,8 @@ type Group struct {
 	errs []error
 }
 
+var New = errors.New
+
 // NewGroup given a prefix will return an Group with the given prefix.
 // Group formats errors like so;
 //
