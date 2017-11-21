@@ -26,35 +26,35 @@ func TestErrorGroups(t *testing.T) {
 	}{
 		{
 			name: "single",
-			err:  New("group1").Add(errors.New("err-1")),
+			err:  NewGroup("group1").Add(errors.New("err-1")),
 		},
 		{
 			name: "twoLevels",
-			err: New("group1").Add(
-				New("group2").Add(errors.New("err-2")),
+			err: NewGroup("group1").Add(
+				NewGroup("group2").Add(errors.New("err-2")),
 			),
 		},
 		{
 			name: "treeLevels",
-			err: New("group1").Add(
-				New("group2").Add(
-					New("group3").Add(errors.New("err-3")),
+			err: NewGroup("group1").Add(
+				NewGroup("group2").Add(
+					NewGroup("group3").Add(errors.New("err-3")),
 				),
-			).Add(New("group4").Add(
-				New("group5").Add(
-					New("group6").New("err-4"),
+			).Add(NewGroup("group4").Add(
+				NewGroup("group5").Add(
+					NewGroup("group6").New("err-4"),
 				),
 			)),
 		},
 		{
 			name: "nil",
-			err: New("group1").Add(err).Add(
-				New("group2").Add(
-					New("group3").Add(errors.New("err-3")),
+			err: NewGroup("group1").Add(err).Add(
+				NewGroup("group2").Add(
+					NewGroup("group3").Add(errors.New("err-3")),
 				),
-			).Add(New("group4").Add(
-				New("group5").Add(
-					New("group6").New("err-4"),
+			).Add(NewGroup("group4").Add(
+				NewGroup("group5").Add(
+					NewGroup("group6").New("err-4"),
 				),
 			)),
 		},

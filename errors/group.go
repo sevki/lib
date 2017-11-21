@@ -22,11 +22,11 @@ type Group struct {
 	errs []error
 }
 
-// New given a prefix will return an Group with the given prefix.
+// NewGroup given a prefix will return an Group with the given prefix.
 // Group formats errors like so;
 //
 //  {prefix}: {err msg}
-func New(prefix string) *Group {
+func NewGroup(prefix string) *Group {
 	return &Group{
 		prefix: prefix,
 	}
