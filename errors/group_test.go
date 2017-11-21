@@ -16,6 +16,27 @@ var (
 	update = flag.Bool("u", false, "-u")
 )
 
+func TestErrored(t *testing.T) {
+	g := NewGroup("prefix")
+	if g.Errored() {
+		t.Fail()
+	}
+	g.New("new error")
+	if !g.Errored() {
+		t.Fail()
+	}
+}
+
+func TestNil(t *testing.T) {
+	g := NewGroup("prefix")
+	if g.Errored() {
+		t.Fail()
+	}
+	g.Add(nil)
+	if g.Errored() {
+		t.Fail()
+	}
+}
 func TestErrorGroups(t *testing.T) {
 	flag.Parse()
 	var err error

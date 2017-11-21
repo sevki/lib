@@ -36,7 +36,7 @@ func NewGroup(prefix string) *Group {
 
 // Add adds a given error to the Group
 func (e *Group) Add(err error) *Group {
-	if e == nil {
+	if err == nil {
 		return e
 	}
 
