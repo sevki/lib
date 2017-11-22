@@ -82,22 +82,41 @@ func (g *Group) Errored() bool {
 func (g *Group) Error() string {
 	buf := bytes.NewBuffer(nil)
 
-	g.printError(buf, 0)
+	g.printError(buf, []string{})
 
 	return buf.String()
 }
 
-func (g *Group) printError(w io.Writer, level int) {
-	padding := strings.Repeat("\t", level)
+func (g *Group) printError(w io.Writer, prefixes []string) {
 	for i, err := range g.errs {
-		if i < 1 {
-			fmt.Fprintf(w, "%s%s:\n", padding, g.prefix)
-		}
+		padding := strings.Join(append(prefixes, g.prefix), ": ")
+		spacePadding := strings.Repeat(" ", len(padding))
+
 		switch x := err.(type) {
 		case *Group:
-			x.printError(w, level+1)
+			x.printError(w, append(prefixes, g.prefix))
 		case error:
-			fmt.Fprintf(w, "%s%s\n", strings.Repeat("\t", level+1), err.Error())
+			a := strings.Split(err.Error(), "\n")
+			for j, line := range a {
+				if i == 0 {
+					if j == 0 {
+						fmt.Fprintf(w, "%s: %s\n", padding, line)
+					}
+				} else {
+					switch g.errs[i-1].(type) {
+					case *Group:
+						fmt.Fprintf(w, "%s: %s\n", padding, line)
+					default:
+						if j > 0 {
+							fmt.Fprintf(w, "%s↪ %s\n", spacePadding, line)
+						} else {
+							fmt.Fprintf(w, "%s  %s\n", spacePadding, line)
+						}
+					}
+				}
+
+			}
+
 		default:
 		}
 	}
