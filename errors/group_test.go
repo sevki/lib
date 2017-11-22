@@ -17,11 +17,46 @@ var (
 )
 
 func TestErrored(t *testing.T) {
-	g := NewGroup("prefix")
-	if g.Errored() {
+	a := NewGroup("a")
+	b := NewGroup("b")
+	c := NewGroup("c")
+	d := NewGroup("d")
+	e := NewGroup("e")
+	f := NewGroup("f")
+	g := NewGroup("g")
+
+	// a = {error}
+	// b = {}
+	// c = {a}
+	// d = {b}
+	// e = {a,b}
+	// f = {d}
+	// g = {c}
+
+	a = a.New("hello")
+	if !a.Errored() {
 		t.Fail()
 	}
-	g.New("new error")
+	if b.Errored() {
+		t.Fail()
+	}
+	c = c.Add(a)
+	if !c.Errored() {
+		t.Fail()
+	}
+	d = d.Add(b)
+	if d.Errored() {
+		t.Fail()
+	}
+	e = e.Add(a).Add(b)
+	if !e.Errored() {
+		t.Fail()
+	}
+	f = f.Add(d)
+	if f.Errored() {
+		t.Fail()
+	}
+	g = g.Add(c)
 	if !g.Errored() {
 		t.Fail()
 	}

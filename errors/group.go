@@ -31,45 +31,65 @@ var New = errors.New
 func NewGroup(prefix string) *Group {
 	return &Group{
 		prefix: prefix,
+		errs:   make([]error, 0),
 	}
 }
 
 // Add adds a given error to the Group
-func (e *Group) Add(err error) *Group {
-	if err == nil {
-		return e
+func (g *Group) Add(err error) *Group {
+	if err != nil {
+		g.mu.Lock()
+		g.errs = append(g.errs, err)
+		g.mu.Unlock()
 	}
+	return g
+}
 
-	e.mu.Lock()
-	e.errs = append(e.errs, err)
-	e.mu.Unlock()
-	return e
+// Newf creates a new error with formatting and adds the new error to the Group
+func (g *Group) Newf(format string, a ...interface{}) *Group {
+	return g.Add(fmt.Errorf(format, a...))
 }
 
 // New creates a new error and adds the new error to the Group
-func (e *Group) New(err string) *Group {
-	e.mu.Lock()
-	e.errs = append(e.errs, errors.New(err))
-	e.mu.Unlock()
-	return e
+func (g *Group) New(s string) *Group {
+	return g.Add(errors.New(s))
 }
 
 // Errored returns true if an error has been added and false if
 // no errors have been added.
-func (e *Group) Errored() bool { return len(e.errs) > 0 }
+func (g *Group) Errored() bool {
+	if g == nil {
+		return false
+	}
+	if len(g.errs) < 1 {
+		return false
+	}
+	for _, child := range g.errs {
+		switch err := child.(type) {
+		case *Group:
+			if err.Errored() {
+				return true
+			}
+		case error:
+			return true
+		}
+	}
+	return false
+}
 
 // Error implements the error interface
-func (e *Group) Error() string {
+func (g *Group) Error() string {
 	buf := bytes.NewBuffer(nil)
 
-	e.printError(buf, 0)
+	g.printError(buf, 0)
+
 	return buf.String()
 }
 
-func (e *Group) printError(w io.Writer, level int) {
+func (g *Group) printError(w io.Writer, level int) {
 	padding := strings.Repeat("\t", level)
-	fmt.Fprintf(w, "%s%s:\n", padding, e.prefix)
-	for _, err := range e.errs {
+	fmt.Fprintf(w, "%s%s:\n", padding, g.prefix)
+	for _, err := range g.errs {
 		switch x := err.(type) {
 		case *Group:
 			x.printError(w, level+1)
