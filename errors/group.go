@@ -98,22 +98,25 @@ func (g *Group) printError(w io.Writer, prefixes []string) {
 		case error:
 			a := strings.Split(err.Error(), "\n")
 			for j, line := range a {
+
+				sep := ":"
+				p := padding
 				if i == 0 {
-					if j == 0 {
-						fmt.Fprintf(w, "%s: %s\n", padding, line)
-					}
+					p = padding
 				} else {
 					switch g.errs[i-1].(type) {
 					case *Group:
-						fmt.Fprintf(w, "%s: %s\n", padding, line)
+						p = padding
 					default:
-						if j > 0 {
-							fmt.Fprintf(w, "%s↪ %s\n", spacePadding, line)
-						} else {
-							fmt.Fprintf(w, "%s  %s\n", spacePadding, line)
-						}
+						sep = " "
+						p = spacePadding
 					}
 				}
+				if j > 0 {
+					sep = "↪"
+					p = spacePadding
+				}
+				fmt.Fprintf(w, "%s%s %s\n", p, sep, line)
 
 			}
 

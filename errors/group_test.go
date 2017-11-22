@@ -16,6 +16,16 @@ var (
 	update = flag.Bool("u", false, "-u")
 )
 
+func TestNilReciever(t *testing.T) {
+	var g *Group
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fail()
+		}
+	}()
+	g.Errored()
+}
+
 func TestErrored(t *testing.T) {
 	a := NewGroup("a")
 	b := NewGroup("b")
