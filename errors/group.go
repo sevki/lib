@@ -22,6 +22,7 @@ type Group struct {
 	errs []error
 }
 
+// New creates a new error
 var New = errors.New
 
 // NewGroup given a prefix will return an Group with the given prefix.
@@ -59,7 +60,7 @@ func (g *Group) New(s string) *Group {
 // no errors have been added.
 func (g *Group) Errored() bool {
 	if g == nil {
-		return false
+		panic("group is nil")
 	}
 	if len(g.errs) < 1 {
 		return false
@@ -70,7 +71,7 @@ func (g *Group) Errored() bool {
 			if err.Errored() {
 				return true
 			}
-		case error:
+		default:
 			return true
 		}
 	}
@@ -88,8 +89,10 @@ func (g *Group) Error() string {
 
 func (g *Group) printError(w io.Writer, level int) {
 	padding := strings.Repeat("\t", level)
-	fmt.Fprintf(w, "%s%s:\n", padding, g.prefix)
-	for _, err := range g.errs {
+	for i, err := range g.errs {
+		if i < 1 {
+			fmt.Fprintf(w, "%s%s:\n", padding, g.prefix)
+		}
 		switch x := err.(type) {
 		case *Group:
 			x.printError(w, level+1)
