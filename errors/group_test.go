@@ -26,6 +26,19 @@ func TestNilReciever(t *testing.T) {
 	g.Errored()
 }
 
+func TestNewF(t *testing.T) {
+
+	g := NewGroup("group1").Newf("%d", 1)
+
+	s := g.Error()
+	x := "group1: 1"
+	if s != x {
+		t.Logf("%q != %q", g.Error(), x)
+		t.Fail()
+	}
+
+}
+
 func TestErrored(t *testing.T) {
 	a := NewGroup("a")
 	b := NewGroup("b")

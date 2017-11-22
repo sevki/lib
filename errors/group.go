@@ -83,8 +83,11 @@ func (g *Group) Error() string {
 	buf := bytes.NewBuffer(nil)
 
 	g.printError(buf, []string{})
-
-	return buf.String()
+	x := buf.String()
+	if strings.HasSuffix(x, "\n") {
+		return x[:len(x)-1]
+	}
+	return x
 }
 
 func (g *Group) printError(w io.Writer, prefixes []string) {
@@ -98,15 +101,14 @@ func (g *Group) printError(w io.Writer, prefixes []string) {
 		case error:
 			a := strings.Split(err.Error(), "\n")
 			for j, line := range a {
-
 				sep := ":"
 				p := padding
 				if i == 0 {
-					p = padding
+					// no op
 				} else {
 					switch g.errs[i-1].(type) {
 					case *Group:
-						p = padding
+						// no op
 					default:
 						sep = " "
 						p = spacePadding
@@ -117,10 +119,7 @@ func (g *Group) printError(w io.Writer, prefixes []string) {
 					p = spacePadding
 				}
 				fmt.Fprintf(w, "%s%s %s\n", p, sep, line)
-
 			}
-
-		default:
 		}
 	}
 }
