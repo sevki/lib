@@ -115,7 +115,7 @@ func (g *Group) printError(w io.Writer, prefixes []string) {
 					}
 				}
 				if j > 0 {
-					sep = "↪"
+					sep = "⮎"
 					p = spacePadding
 				}
 				fmt.Fprintf(w, "%s%s %s\n", p, sep, line)

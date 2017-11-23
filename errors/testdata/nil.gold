@@ -1,8 +1,2 @@
-group1:
-	group2:
-		group3:
-			err-3
-	group4:
-		group5:
-			group6:
-				err-4
+group1: group2: group3: err-3
+group1: group4: group5: group6: err-4

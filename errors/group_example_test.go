@@ -20,10 +20,10 @@ carriage return before this `),
 	// group1: group2: group3: group before this
 	//                         space before this
 	//                         space before this
-	//                       ↪ carriage return before this
+	//                       ⮎ carriage return before this
 	// group1: group2: group before this
-	//               ↪ carriage return before this
-	//               ↪ carriage return before this
-	//               ↪ carriage return before this
+	//               ⮎ carriage return before this
+	//               ⮎ carriage return before this
+	//               ⮎ carriage return before this
 
 }
