@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package time // import "sevki.org/lib/time"
+package time // import "sevki.org/x/time"
 import (
 	"fmt"
 	"time"
@@ -39,8 +39,8 @@ const day time.Duration = 86400000000000
 const month time.Duration = 2628000000001209
 const year time.Duration = 31535999999964780
 
-// Time in words returns time in words after subtracting it from now.
-func TimeInWords(t time.Time) string {
+// InWords returns time in words after subtracting it from now.
+func InWords(t time.Time) string {
 
 	now := time.Now()
 	d := now.Sub(t)
@@ -84,7 +84,6 @@ func TimeInWords(t time.Time) string {
 
 // DurationInWords returns duration in words.
 func DurationInWords(d time.Duration) string {
-
 	if d >= time.Second && d <= (time.Second*4) {
 		return fmt.Sprintf(lssthnd, 5, "seconds")
 	} else if d >= (time.Second*5) && d < (time.Second*10) {

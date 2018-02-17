@@ -1,3 +1,8 @@
+// Copyright 2018 Sevki <s@sevki.org>. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package errors provides grouped errors.
 package errors
 
 import (

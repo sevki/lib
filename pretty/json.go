@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package prettyprint // import "sevki.org/lib/prettyprint"
+package pretty // import "sevki.org/x/pretty"
 
 import (
 	"bytes"
@@ -10,8 +10,8 @@ import (
 	"fmt"
 )
 
-// AsJSON prints a struct neatly in JSON format
-func AsJSON(x interface{}) string {
+// JSON prints a struct neatly in JSON format
+func JSON(x interface{}) string {
 	b, err := json.Marshal(x)
 	if err != nil {
 		return fmt.Sprintf("JSON parse error: %s", err)

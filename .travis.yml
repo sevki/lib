@@ -2,14 +2,16 @@ language: go
 go:
   - 1.7.x
   - 1.8.x
+  - 1.9.x
+  - 1.10.x
   - master
 matrix:
   allow_failures:
     - go: master
   fast_finish: true
-go_import_path: sevki.org/lib
+go_import_path: sevki.org/x
 install:
-  - go get -v -t -d sevki.org/lib/...
+  - go get -v -t -d sevki.org/x/...
 script:
   - ./test.sh
 after_success:
