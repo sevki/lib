@@ -1,16 +1,28 @@
 package reconcile
 
 import (
+	"crypto/sha512"
+	"fmt"
 	"testing"
 )
 
+type object struct {
+	i interface{}
+}
+
+func (o object) Hash() []byte {
+	h := sha512.New()
+	fmt.Fprintf(h, "%s", o.i)
+	return h.Sum(nil)
+}
+
 type testState struct {
-	i map[string]string
+	i map[string]interface{}
 }
 
 func strptr(s string) *string                          { return &s }
-func (ts *testState) Add(key string, v interface{})    { ts.i[key] = v.(string) }
-func (ts *testState) Update(key string, v interface{}) { ts.i[key] = v.(string) }
+func (ts *testState) Add(key string, v interface{})    { ts.i[key] = v }
+func (ts *testState) Update(key string, v interface{}) { ts.i[key] = v }
 func (ts *testState) Get(key string) interface{} {
 	if val, ok := ts.i[key]; ok {
 		return val
@@ -28,15 +40,87 @@ func TestReconcile(t *testing.T) {
 	tests := []struct {
 		name             string
 		current, desired State
+		updates          []update
 	}{
 		{
-			name: "map",
+			name: "string add",
+			updates: []update{
+				{
+					key:   "Hello",
+					state: new,
+				},
+			},
+
 			current: &testState{
-				map[string]string{},
+				map[string]interface{}{},
 			},
 			desired: &testState{
-				map[string]string{
+				map[string]interface{}{
 					"Hello": "World",
+				},
+			},
+		},
+		{
+			name: "string update",
+			updates: []update{
+				{
+					key:   "Hello",
+					state: dirty,
+				},
+			},
+			current: &testState{
+				map[string]interface{}{
+					"Hello": "Go",
+				},
+			},
+			desired: &testState{
+				map[string]interface{}{
+					"Hello": "World",
+				},
+			},
+		},
+		{
+			name: "string delete",
+			updates: []update{
+				{
+					key:   "Hello",
+					state: old,
+				},
+			},
+			current: &testState{
+				map[string]interface{}{
+					"Hello": "Go",
+				},
+			},
+			desired: &testState{
+				map[string]interface{}{},
+			},
+		},
+		{
+			name:    "string noop",
+			updates: []update{},
+			current: &testState{
+				map[string]interface{}{
+					"Hello": "World",
+				},
+			},
+			desired: &testState{
+				map[string]interface{}{
+					"Hello": "World",
+				},
+			},
+		},
+		{
+			name:    "object noop",
+			updates: []update{},
+			current: &testState{
+				map[string]interface{}{
+					"Hello": object{true},
+				},
+			},
+			desired: &testState{
+				map[string]interface{}{
+					"Hello": object{true},
 				},
 			},
 		},
@@ -44,13 +128,19 @@ func TestReconcile(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			Reconcile(test.current, test.desired)
-			test.desired.Walk(func(key string, v interface{}) {
-				if test.current.Get(key) != v {
+			updates := diff(test.current, test.desired)
+			if len(test.updates) != len(updates) {
+				t.Log("actual updates don't match the expected ones")
+				return
+			}
+			for i, update := range test.updates {
+				keyMatch := updates[i].key == update.key
+				stateMatch := updates[i].state == update.state
+
+				if !(keyMatch && stateMatch) {
 					t.Fail()
-					return
 				}
-			})
+			}
 		})
 	}
 }
