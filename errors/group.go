@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package errors provides grouped errors.
-package errors
+package errors // import "sevki.org/x/errors"
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package source
+package source // import "sevki.org/x/source"
 
 import (
 	"regexp"
