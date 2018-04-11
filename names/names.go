@@ -1,4 +1,4 @@
-package names
+package names // import "sevki.org/x/names"
 
 import (
 	"crypto/sha512"
