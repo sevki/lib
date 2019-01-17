@@ -10,8 +10,6 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-
-	"sevki.org/cf-controller/dns"
 )
 
 // StateWalkFunc walks a state. Walk should be hierarchical to ensure
@@ -48,8 +46,8 @@ const (
 )
 
 // Reconcile takes two states and applies updates to them until they are the same
-func Reconcile(current, desired State) {
-	fix(current, diff(current, desired))
+func Reconcile(current, desired State, verbose bool) {
+	fix(current, diff(current, desired), verbose)
 }
 
 type update struct {
@@ -59,25 +57,25 @@ type update struct {
 	why   string
 }
 
-// Hasher returns a unique Hash for an object for comparison
-type Hasher interface {
-	Hash() []byte
+// Checksumed returns a unique Hash for an object for comparison
+type Checksumed interface {
+	Sum() []byte
 }
 
 var (
-	ErrHashMismatch      = errors.New("hash mismatch")
+	ErrHashMismatch      = errors.New("checksum mismatch")
 	ErrDeepEqualMismatch = errors.New("reflect.Deepequal mismatch")
 )
 
 // compare takes two interfaces and returns true if they are the same
 func compare(a, b interface{}) error {
-	hashableA, aok := a.(Hasher)
-	hashableB, bok := b.(Hasher)
+	hashableA, aok := a.(Checksumed)
+	hashableB, bok := b.(Checksumed)
 	if aok && bok {
-		desiredSum := hashableA.Hash()
-		currentSum := hashableB.Hash()
+		desiredSum := hashableA.Sum()
+		currentSum := hashableB.Sum()
 		if bytes.Compare(desiredSum, currentSum) != 0 {
-			return fmt.Errorf("%s.sum=%x != %s.sum=%x", a.(dns.Record).Name, desiredSum[:5], b.(dns.Record).Name, currentSum[:5])
+			return fmt.Errorf("%v sum=%x != %v sum=%x", a, desiredSum[:5], b, currentSum[:5])
 		}
 	} else {
 		if !reflect.DeepEqual(a, b) {
@@ -123,9 +121,11 @@ func diff(current, desired State) []update {
 	return updates
 }
 
-func fix(current State, updates []update) {
+func fix(current State, updates []update, verbose bool) {
 	for _, update := range updates {
-		log.Printf("key:%s state:%s\n\twhy:%s\n ", update.key, update.state, update.why)
+		if verbose {
+			log.Printf("key:%s state:%s\n\twhy:%s\n ", update.key, update.state, update.why)
+		}
 		switch update.state {
 		case new:
 			current.Add(update.key, update.v)
