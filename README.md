@@ -1,4 +1,4 @@
-# X [![Build Status](https://travis-ci.org/sevki/x.svg?branch=master)](https://travis-ci.org/sevki/x)
+# X ![X](https://github.com/sevki/x/workflows/X/badge.svg)
 
 see: https://sevki.org/x
 
