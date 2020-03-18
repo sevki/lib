@@ -3,9 +3,8 @@
 package markdown
 
 import (
-	"fmt"
 	"io"
-	"log"
+	"strings"
 	"time"
 
 	"github.com/araddon/dateparse"
@@ -36,6 +35,8 @@ type Author struct {
 	Name        string
 	Affiliation string
 	Email       string
+	Twitter     string
+	Github      string
 }
 
 // Post holds info about the post
@@ -64,16 +65,21 @@ func (r *renderer) RenderNode(w io.Writer, n *blackfriday.Node, entering bool) b
 	switch n.Type {
 	case blackfriday.Heading:
 		r.parsingTitle = n.IsTitleblock
-		if n.IsTitleblock && !entering {
-			return blackfriday.GoToNext
+		if n.IsTitleblock {
+			if entering {
+				return blackfriday.GoToNext
+			}
+			return blackfriday.SkipChildren
 		}
 	case blackfriday.Text:
 		if r.parsingTitle {
-			if err := yaml.Unmarshal(n.Literal, &r.title); err != nil {
-				fmt.Fprint(w, err.Error())
+			magic := []byte(`title:`)
+			// BUG(sevki): we get things that are not title blocks here
+			isTitle := strings.Index(string(n.Literal), string(magic)) == 0
+			if err := yaml.Unmarshal(n.Literal, &r.title); isTitle && err != nil {
+				panic(err.Error())
 				return blackfriday.Terminate
 			}
-			log.Println(r.title)
 			r.parsingTitle = false
 			return blackfriday.SkipChildren
 		}
