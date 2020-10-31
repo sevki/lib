@@ -53,6 +53,7 @@ func Printf(format string, v ...interface{}) {
 		mut.Unlock()
 	}
 }
+
 func Println(v ...interface{}) {
 	if debugging {
 		mut.Lock()
@@ -64,12 +65,15 @@ func Println(v ...interface{}) {
 		mut.Unlock()
 	}
 }
-func Indent(buf *bytes.Buffer, level int) {
+
+func PrefixLine(buf *bytes.Buffer,prefix string, level int) {
 	tmp := &bytes.Buffer{}
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
-		fmt.Fprintln(tmp, strings.Repeat("\t", level), scanner.Text())
+		fmt.Fprintln(tmp, strings.Repeat(prefix, level), scanner.Text())
 	}
 	buf.Reset()
 	buf.Write(tmp.Bytes())
 }
+
+func Indent(buf *bytes.Buffer, level int) { return PrefixLine(buf, "\t", level) }
