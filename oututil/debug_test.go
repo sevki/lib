@@ -14,8 +14,8 @@ func init() {
 }
 
 func ExamplePrefixLine() {
-	const body = "Go is a general-purpose language designed with systems programming in mind."
-	req, err := http.NewRequest("PUT", "http://www.example.org", strings.NewReader(body))
+	const body = "Any seemingly pointless activity which is actually necessary to solve a problem which solves a problem which, several levels of recursion later, solves the real problem you're working on."
+	req, err := http.NewRequest("PUT", "https://bovineshave.club", strings.NewReader(body))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,10 +29,10 @@ func ExamplePrefixLine() {
 	fmt.Println(b.String())
 	// Output:
 	// >  PUT / HTTP/1.1
-	// >  Host: www.example.org
+	// >  Host: bovineshave.club
 	// >  User-Agent: Go-http-client/1.1
-	// >  Content-Length: 75
+	// >  Content-Length: 187
 	// >  Accept-Encoding: gzip
-	// >
-	// >  Go is a general-purpose language designed with systems programming in mind.
+	// > 
+	// >  Any seemingly pointless activity which is actually necessary to solve a problem which solves a problem which, several levels of recursion later, solves the real problem you're working on.
 }
