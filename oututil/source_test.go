@@ -1,16 +1,18 @@
-package source
+package oututil
 
-import "testing"
+import (
+	"testing"
+)
 
 var sourceTests = []struct {
 	name    string
 	message string
-	errors  []Error
+	errors  []SourceError
 }{
 	{
 		"single message",
 		"a.go:123:6: expected '(', found 'IDENT' decodeLoggedInUserRequest (and 2 more errors)",
-		[]Error{
+		[]SourceError{
 			{
 				"a.go",
 				123,
@@ -22,7 +24,7 @@ var sourceTests = []struct {
 	{
 		"single message no column",
 		"a.go:123: expected '(', found 'IDENT' decodeLoggedInUserRequest (and 2 more errors)",
-		[]Error{
+		[]SourceError{
 			{
 				"a.go",
 				123,
@@ -35,7 +37,7 @@ var sourceTests = []struct {
 		"multiple messages",
 		`a.go:123:12: expected '(', found 'IDENT' decodeLoggedInUserRequest (and 2 more errors)
     b.go:123:1122: expected '(', found 'IDENT' decodeLoggedInUserRequest (and 2 more errors)`,
-		[]Error{
+		[]SourceError{
 			{
 				"a.go",
 				123,
@@ -55,7 +57,7 @@ var sourceTests = []struct {
 func TestParse(t *testing.T) {
 	for _, test := range sourceTests {
 		t.Run(test.name, func(t *testing.T) {
-			errs := ParseSourceErrors(test.message)
+			errs := ScanSourceError(test.message)
 			if len(errs) != len(test.errors) {
 				t.Logf("was expecting %d errors got %d instead", len(test.errors), len(errs))
 				t.Fail()

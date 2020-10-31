@@ -1,4 +1,4 @@
-package debug
+package oututil
 
 import (
 	"bufio"
@@ -42,6 +42,7 @@ func printheader() {
 	l.Printf("%s:%d > %s\n", rel, line, name)
 }
 
+// Printf prints a message with a header
 func Printf(format string, v ...interface{}) {
 	if debugging {
 		mut.Lock()
@@ -54,6 +55,7 @@ func Printf(format string, v ...interface{}) {
 	}
 }
 
+// Println prints a message with a header and appends a \n
 func Println(v ...interface{}) {
 	if debugging {
 		mut.Lock()
@@ -66,7 +68,8 @@ func Println(v ...interface{}) {
 	}
 }
 
-func PrefixLine(buf *bytes.Buffer,prefix string, level int) {
+// PrefixLine prefixes all lines in a buffer
+func PrefixLine(buf *bytes.Buffer, prefix string, level int) {
 	tmp := &bytes.Buffer{}
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
@@ -76,4 +79,5 @@ func PrefixLine(buf *bytes.Buffer,prefix string, level int) {
 	buf.Write(tmp.Bytes())
 }
 
-func Indent(buf *bytes.Buffer, level int) { return PrefixLine(buf, "\t", level) }
+// Indent prefixes all lines with \t
+func Indent(buf *bytes.Buffer, level int) { PrefixLine(buf, "\t", level) }
